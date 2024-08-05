@@ -8,15 +8,21 @@ def read_print(filename):
     """Reads the given print and returns a dictionary with all info."""
     # Your turn!
     fingerprint_data = {}
-    with open(data) as fh:
-        for line in fh: 
-            #grab first line as name, second line as width, third line height, line 9 on as fingerprint
-            name, username = line.strip()
-            fingerprint_data[name] = username
-            width, fingerprint_width = line[1].strip()
-            fingerprint_data[width] = fingerprint_width
-            height, fingerprint_height = line[2].strip()
-            fingerprint_data[height] = fingerprint_height
+    with open(filename) as fh:
+        lines = fh.readlines()
+        # Initialize variables for each part of the data
+        name = None
+        width = None
+        height = None
+        fingerprint = []
+
+    i = 1
+
+    while i < len(lines): 
+        #grab first line as name, second line as width, third line height, line 9 on as fingerprint
+        name = lines[i].strip()
+        width = lines[i+1].strip()
+        height = lines[i+2].strip()
     print(fingerprint_data)
     return fingerprint_data
 
