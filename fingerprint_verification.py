@@ -11,18 +11,19 @@ def read_print(filename):
     with open(filename) as fh:
         lines = fh.readlines()
         # Initialize variables for each part of the data
-        name = None
-        width = None
-        height = None
-        fingerprint = []
 
     i = 1
-
     while i < len(lines): 
         #grab first line as name, second line as width, third line height, line 9 on as fingerprint
-        name = lines[i].strip()
-        width = lines[i+1].strip()
-        height = lines[i+2].strip()
+        name = lines[i]
+        width = lines[i+1]
+        height = lines[i+2]
+
+        fingerprint_data[name] = {
+            'width': width,
+            'height': height     
+        }
+    
     print(fingerprint_data)
     return fingerprint_data
 
