@@ -11,11 +11,16 @@ def read_print(filename):
         name = fh.readline().strip()
         width = fh.readline().strip()
         height = fh.readline().strip()
-        fingerprint = []
         
-    fingerprint_data['name'] = name
-    fingerprint_data['width'] = width
-    fingerprint_data['height'] = height
+        fingerprint_data['name'] = name
+        fingerprint_data['width'] = width
+        fingerprint_data['height'] = height
+
+        fingerprint = [] 
+
+        for line in fh: 
+            fingerprint.append(line.strip().split())
+    fingerprint_data['fingerprint'] = fingerprint
 
     print(fingerprint_data)
     return fingerprint_data
