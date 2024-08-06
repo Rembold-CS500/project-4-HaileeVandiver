@@ -25,22 +25,25 @@ def read_print(filename):
     print(fingerprint_data)
     return fingerprint_data
 
+def simple_check(fingerprint_data, another_fingerprint_data): 
+    return fingerprint_data['fingerprint'] == another_fingerprint_data['fingerprint']
 
-  
-    '''  i = 1
-    while i < len(lines): 
-        #grab first line as name, second line as width, third line height, line 9 on as fingerprint
-        name = lines[i]
-        fingerprint_data[name] = name 
-        width = lines[i+1]
-        height = lines[i+2]
-    print(fingerprint_data)
-    return fingerprint_data
-    '''
-  
-  
-
-
+def variant_check(fingerprint, another_fingerprint):
+    #compute the percentage of the matching pixels by dividing that count by the total number of compared pixels and multiplying by 100.
+    #compare every character of the two fingerprint arrays 
+    matching_pixels = 0
+    total_compared_pixels = (len(fingerprint))
+    for i in range(len(fingerprint[i])): 
+        for j in range(len(fingerprint[i])):
+            if fingerprint[i][j] == another_fingerprint[i][j]:
+                matching_pixels += matching_pixels
+    
+    if (matching_pixels / total_compared_pixels) * 100 >= 95: 
+        print("These fingerprints are a match")
+        return True
+    else: 
+        print("These fingerprints are not a match")
+        return False
 
 
 
