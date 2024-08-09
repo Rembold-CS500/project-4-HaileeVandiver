@@ -18,10 +18,12 @@ def read_print(filename):
 
         fingerprint = [] 
 
-        for line in fh:
-            cleaned_line = line.strip()
-            if cleaned_line:  # Only add the line if it's not empty
-                fingerprint.append(cleaned_line.split())
+        for line in filename:
+            cleaned_line = line.rstrip()  # Keep trailing spaces but remove newlines
+        # If the line is empty, create a row of spaces with the correct width
+        if not cleaned_line:
+            cleaned_line = ' ' * width
+        fingerprint.append(cleaned_line)
 
         if not fingerprint:  # Check if the fingerprint list is empty
             print(f"Warning: No fingerprint data found in {filename}")
@@ -32,41 +34,75 @@ def read_print(filename):
     return fingerprint_data
 
 
-def simple_check(fingerprint_data, another_fingerprint_data): 
-    return fingerprint_data['fingerprint'] == another_fingerprint_data['fingerprint']
-def variant_check(fingerprint_data, another_fingerprint_data):
-    fingerprint = fingerprint_data['fingerprint']
-    another_fingerprint = another_fingerprint_data['fingerprint']
-    
-    height = fingerprint_data['height']
-    width = fingerprint_data['width']
+def simple_check(fingerprint_data1, fingerprint_data2):
+    """
+    Compares the fingerprint portions of two fingerprint dictionaries.
+    Returns True if the fingerprints are the same, otherwise False.
+    """
+    return fingerprint_data1['fingerprint'] == fingerprint_data2['fingerprint']
 
-    # Ensure both fingerprints have the same dimensions
-    if height != another_fingerprint_data['height'] or width != another_fingerprint_data['width']:
-        print("Fingerprints have different dimensions and cannot be compared.")
-        return False
+def variant_check(fingerprint_data1, fingerprint_data2):
+    """
+    Compares the fingerprint portions of two fingerprint dictionaries
+    and calculates the percentage of matching pixels.
+    Returns True if the matching percentage is 95% or higher, otherwise False.
+    """
+    fingerprint1 = fingerprint_data1['fingerprint']
+    fingerprint2 = fingerprint_data2['fingerprint']
 
     matching_pixels = 0
-    total_compared_pixels = 0
-    
-    for i in range(height):
-        for j in range(width):
-            total_compared_pixels += 1
-            if fingerprint[i][j] == another_fingerprint[i][j]:
+    total_pixels = 0
+
+    for i in range(len(fingerprint1)):
+        for j in range(len(fingerprint1[i])):
+            total_pixels += 1
+            if fingerprint1[i][j] == fingerprint2[i][j]:
                 matching_pixels += 1
-    
-    match_percentage = (matching_pixels / total_compared_pixels) * 100
+
+    match_percentage = (matching_pixels / total_pixels) * 100
     print(f"Matching percentage: {match_percentage:.2f}%")
-    
-    if match_percentage >= 95: 
-        return True
-    else: 
-        return False
+
+    return match_percentage >= 95
+
+def shifted_check(fingerprint_data1, fingerprint_data2):
+    """
+    Compares the fingerprint portions of two fingerprint dictionaries
+    with possible shifts and computes the best matching percentage.
+    Returns True if the best matching percentage is 95% or higher, otherwise False.
+    """
+    fingerprint1 = fingerprint_data1['fingerprint']
+    fingerprint2 = fingerprint_data2['fingerprint']
+    height = len(fingerprint1)
+    width = len(fingerprint1[0])
+    max_shift = 5
+    best_match_percentage = 0
+
+    for vertical_shift in range(-max_shift, max_shift + 1):
+        for horizontal_shift in range(-max_shift, max_shift + 1):
+            matching_pixels = 0
+            total_pixels = 0
+
+            for i in range(max(0, -vertical_shift), min(height, height - vertical_shift)):
+                for j in range(max(0, -horizontal_shift), min(width, width - horizontal_shift)):
+                    if fingerprint1[i][j] == fingerprint2[i + vertical_shift][j + horizontal_shift]:
+                        matching_pixels += 1
+                    total_pixels += 1
+
+            if total_pixels > 0:
+                match_percentage = (matching_pixels / total_pixels) * 100
+                best_match_percentage = max(best_match_percentage, match_percentage)
+
+    print(f"Best matching percentage: {best_match_percentage:.2f}%")
+
+    return best_match_percentage >= 95
+
 
 if __name__ == '__main__':
-    # Example usage
-    data = read_print("./prints/User1_Original.txt")
+    # Read in two fingerprint files
+    data1 = read_print("./prints/User1_Original.txt")
     data2 = read_print("./prints/User1_Variant1.txt")
-    is_match = variant_check(data, data2)
-    print("Match:" if is_match else "No Match")
+    user_1_shifted_1 = read_print("./prints/User1_ShiftedVariant1.txt")  
+    user_1_shifted_2 = read_print("./prints/User1_ShiftedVariant2.txt")
+
+    print(shifted_check(data1, user_1_shifted_2))  # Test with a shifted variant
 
